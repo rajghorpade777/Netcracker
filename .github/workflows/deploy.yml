@@ -18,12 +18,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::AWS_ACCOUNT_ID:role/GithubActionsEKSRole
+          aws-region: us-east-1   # ✅ Ensure AWS region is set
 
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true   # ✅ Security best practice
+          registry-type: private
 
       - name: Build and push Docker image
         env:
